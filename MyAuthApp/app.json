@@ -1,0 +1,12 @@
+{
+  "name": "MyAuthApp",
+  "displayName": "MyAuthApp",
+  "expo": {
+    "name": "MyAuthApp",
+    "slug": "MyAuthApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
