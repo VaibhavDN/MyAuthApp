@@ -111,7 +111,7 @@ const LoginComponent = (props) => {
                         <>
                             {(cyclableProp.label == labels.email) ? <Text style={styles.emailValidation}>{emailValidation}</Text> : <></>}
                             <View style={cyclableProp.style}>
-                                <FloatingLabelComponent {...cyclableProp} />
+                                <FloatingLabelComponent key={cyclableProp.label} {...cyclableProp} />
                             </View>
                         </>
                     )
