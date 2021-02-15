@@ -87,18 +87,35 @@ const LoginComponent = (props) => {
         setPassword(text)
     }
 
+    const cyclableProps = [
+        {
+            'style': styles.emailView,
+            'label': labels.email,
+            'pass': false,
+            'passToParentEmail': childCallBackEmail,
+        },
+        {
+            'style': styles.passwordView,
+            'label': labels.password,
+            'pass': true,
+            'passToParentPass': childCallBackPass,
+        },
+    ]
+
     return (
         <>
             {/*<Text>{email} {password} </Text>*/}
             <View style={styles.container}>
-                <Text style={styles.emailValidation}>{ emailValidation }</Text>
-                <View style={styles.emailView}>
-                    <FloatingLabelComponent label={labels.email} pass={false} passToParentEmail={childCallBackEmail} />
-                </View>
-
-                <View style={styles.passwordView}>
-                    <FloatingLabelComponent label={labels.password} pass={true} passToParentPass={childCallBackPass} />
-                </View>
+                {cyclableProps.map((cyclableProp) => {
+                    return (
+                        <>
+                            {(cyclableProp.label == labels.email) ? <Text style={styles.emailValidation}>{emailValidation}</Text> : <></>}
+                            <View style={cyclableProp.style}>
+                                <FloatingLabelComponent {...cyclableProp} />
+                            </View>
+                        </>
+                    )
+                })}
             </View>
 
             <LoginButtonComponent userEmail={email} userPass={password} navResult={props.navResult} buttonState={emailValidation} />
@@ -173,6 +190,7 @@ const styles = StyleSheet.create({
         marginRight: width * 0.10,
         alignContent: 'flex-end',
         alignSelf: 'center',
+        marginBottom: width * 0.10,
     },
     emailValidation: {
         color: "#FF0000",
