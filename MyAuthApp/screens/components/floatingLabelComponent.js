@@ -9,6 +9,13 @@ const labels = {
     repassword: "RePassword",
 }
 
+const inputStateObj = {
+    Name: "",
+    Email: "",
+    Password: "",
+    RePassword: "",
+}
+
 const FloatingLabelComponent = (props) => {
     const [inFocus, setInFocus] = useState(false)
     const [label, setLabel] = useState('')
@@ -18,7 +25,7 @@ const FloatingLabelComponent = (props) => {
         'Password': 0,
         'RePassword': 0,
     })
-    const [inputState, setInputState] = useState({ ...labels })
+    const [inputState, setInputState] = useState({ ...inputStateObj })
 
     const returnToParent = {
         'Name': 'passToParentName',
@@ -47,7 +54,7 @@ const FloatingLabelComponent = (props) => {
             setLabel(_label)
         }
         
-        console.log(props[returnToParent[_label]]())
+        console.log(props[returnToParent[_label]](text))
 
         const obj = { ...lengthObj }
         if(inputState[_label] != undefined) {
@@ -87,4 +94,5 @@ const styles = StyleSheet.create({
 module.exports = {
     "FloatingLabelComponent": FloatingLabelComponent,
     "labels": labels,
+    "inputStateObj": inputStateObj,
 }

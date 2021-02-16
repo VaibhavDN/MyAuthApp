@@ -3,7 +3,7 @@ import React from 'react'
 import { useState } from 'react'
 import { StyleSheet, Text, ScrollView, Dimensions, View, ToastAndroid, TextInput, Alert } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { FloatingLabelComponent, labels } from './components/floatingLabelComponent'
+import { FloatingLabelComponent, labels, inputStateObj } from './components/floatingLabelComponent'
 import TopDesign from './components/topDesignComponent'
 
 const LoginComponent = (props) => {
@@ -27,8 +27,12 @@ const SignupButtonComponent = (props) => {
             <TouchableOpacity style={styles.signupButton} onPress={() => {
                 ToastAndroid.show("Trying to sign you up.. " + props.buttonState.toString(), ToastAndroid.SHORT, ToastAndroid.BOTTOM)
 
-                if (props.buttonState.length > 0 || props.userEmail.length == 0) {
+                if(props.buttonState.length > 0 || props.inputState[labels.email].length == 0) {
                     Alert.alert("Invalid email", "Email should be of type: example@example.com")
+                    return
+                }
+                else if(props.inputState[labels.name].length == 0 || props.inputState[labels.password].length == 0 || props.inputState[labels.repassword].length == 0) {
+                    Alert.alert("Empty fields", "Fields can not be empty..")
                     return
                 }
 
@@ -41,9 +45,9 @@ const SignupButtonComponent = (props) => {
                     },
                     body: JSON.stringify({
                         name: 'To be dropped',
-                        email: props.userEmail,
-                        password: props.userPass,
-                        repassword: props.userRePass,
+                        email: props.inputState[labels.email],
+                        password: props.inputState[labels.password],
+                        repassword: props.inputState[labels.repassword],
                     })
                 })
                     .then((response) => {
@@ -68,20 +72,17 @@ const SignupButtonComponent = (props) => {
 }
 
 const SignupComponent = (props) => {
-    const [name, setName] = useState('Default name')
-    const [email, setEmail] = useState('Default email')
-    const [password, setPassword] = useState('Default password')
-    const [repassword, setRePassword] = useState('Default repassword')
     const [emailValidation, setEmailValidation] = useState('')
+    const [inputState, setInputState] = useState({ ...inputStateObj })
+    const obj = {...inputState}
 
     const childCallBackName = (text) => {
-        setName(text)
+        obj[labels.name] = text
     }
 
     const childCallBackEmail = (text) => {
-
         let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-        if (regex.test(email) === false) {
+        if (regex.test(text) === false) {
             let emailValidationFail = "This is not a valid email address"
             setEmailValidation(emailValidationFail)
         }
@@ -89,15 +90,18 @@ const SignupComponent = (props) => {
             setEmailValidation('')
         }
 
-        setEmail(text)
+        obj[labels.email] = text
+        setInputState(obj)
     }
 
     const childCallBackPass = (text) => {
-        setPassword(text)
+        obj[labels.password] = text
+        setInputState(obj)
     }
 
     const childCallBackRePass = (text) => {
-        setRePassword(text)
+        obj[labels.repassword] = text
+        setInputState(obj)
     }
 
     const cyclableProps = [
@@ -143,7 +147,7 @@ const SignupComponent = (props) => {
                 })}
             </View>
 
-            <SignupButtonComponent userName={name} userEmail={email} userPass={password} userRePass={repassword} navResult={props.navResult} buttonState={emailValidation} />
+            <SignupButtonComponent inputState={inputState} navResult={props.navResult} buttonState={emailValidation} />
         </>
     )
 }

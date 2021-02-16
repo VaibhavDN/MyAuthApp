@@ -3,7 +3,7 @@ import React from 'react'
 import { useState } from 'react'
 import { StyleSheet, Text, ScrollView, Dimensions, View, ToastAndroid, Alert } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { FloatingLabelComponent, labels } from './components/floatingLabelComponent'
+import { FloatingLabelComponent, labels, inputStateObj } from './components/floatingLabelComponent'
 import TopDesign from './components/topDesignComponent'
 
 const SignupComponent = (props) => {
@@ -27,11 +27,17 @@ const LoginButtonComponent = (props) => {
             <TouchableOpacity style={styles.loginButton} onPress={() => {
                 ToastAndroid.show("Trying to log you in..", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
 
-                if(props.buttonState.length > 0 || props.userEmail.length == 0) {
+                console.log("gvghhg", props.inputState, labels.email)
+                if(props.buttonState.length > 0 || props.inputState[labels.email].length == 0) {
                     Alert.alert("Invalid email", "Email should be of type: example@example.com")
                     return
                 }
-
+                else if(props.inputState[labels.name].length == 0 || props.inputState[labels.password].length == 0 || props.inputState[labels.repassword].length == 0) {
+                    Alert.alert("Empty fields", "Fields can not be empty..")
+                    return
+                }
+                
+                //console.log("jbjdsbkjdsnjkdsjkndsk", props.inputState[labels.email], props.inputState[labels.password])
                 fetch('https://myauthapp.loca.lt/login/', {
                     method: 'POST',
                     headers: {
@@ -40,8 +46,8 @@ const LoginButtonComponent = (props) => {
                         'Bypass-Tunnel-Reminder': 'Bypass localtunnel',
                     },
                     body: JSON.stringify({
-                        email: props.userEmail,
-                        password: props.userPass,
+                        email: props.inputState[labels.email],
+                        password: props.inputState[labels.password],
                     })
                 })
                     .then((response) => {
@@ -65,14 +71,12 @@ const LoginButtonComponent = (props) => {
 }
 
 const LoginComponent = (props) => {
-    const [email, setEmail] = useState('Default email')
-    const [password, setPassword] = useState('Default password')
     const [emailValidation, setEmailValidation] = useState('')
+    const [inputState, setInputState] = useState({ ...inputStateObj })
 
     const childCallBackEmail = (text) => {
-
         let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-        if (regex.test(email) === false) {
+        if (regex.test(text) === false) {
             let emailValidationFail = "This is not a valid email address"
             setEmailValidation(emailValidationFail)
         }
@@ -80,11 +84,15 @@ const LoginComponent = (props) => {
             setEmailValidation('')
         }
 
-        setEmail(text)
+        const obj = {...inputState}
+        obj[labels.email] = text
+        setInputState(obj)
     }
 
     const childCallBackPass = (text) => {
-        setPassword(text)
+        const obj = {...inputState}
+        obj[labels.password] = text
+        setInputState(obj)
     }
 
     const cyclableProps = [
@@ -104,13 +112,13 @@ const LoginComponent = (props) => {
 
     return (
         <>
-            {/*<Text>{email} {password} </Text>*/}
-            <View style={styles.container}>
+            {/*<Text>{inputState[labels.email]} {inputState[labels.password]} </Text>*/}
+            <View key="containerView" style={styles.container}>
                 {cyclableProps.map((cyclableProp) => {
                     return (
                         <>
                             {(cyclableProp.label == labels.email) ? <Text style={styles.emailValidation}>{emailValidation}</Text> : <></>}
-                            <View style={cyclableProp.style}>
+                            <View key={cyclableProp.label} style={cyclableProp.style}>
                                 <FloatingLabelComponent key={cyclableProp.label} {...cyclableProp} />
                             </View>
                         </>
@@ -118,7 +126,7 @@ const LoginComponent = (props) => {
                 })}
             </View>
 
-            <LoginButtonComponent userEmail={email} userPass={password} navResult={props.navResult} buttonState={emailValidation} />
+            <LoginButtonComponent key="loginBtn" inputState={inputState} navResult={props.navResult} buttonState={emailValidation} />
         </>
     )
 }
