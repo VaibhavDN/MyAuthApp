@@ -27,7 +27,6 @@ const LoginButtonComponent = (props) => {
             <TouchableOpacity style={styles.loginButton} onPress={() => {
                 ToastAndroid.show("Trying to log you in..", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
 
-                console.log("gvghhg", props.inputState, labels.email)
                 if(props.buttonState.length > 0 || props.inputState[labels.email].length == 0) {
                     Alert.alert("Invalid email", "Email should be of type: example@example.com")
                     return
@@ -37,7 +36,6 @@ const LoginButtonComponent = (props) => {
                     return
                 }
                 
-                //console.log("jbjdsbkjdsnjkdsjkndsk", props.inputState[labels.email], props.inputState[labels.password])
                 fetch('https://myauthapp.loca.lt/login/', {
                     method: 'POST',
                     headers: {
