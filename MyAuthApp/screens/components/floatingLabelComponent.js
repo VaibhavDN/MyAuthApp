@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { StyleSheet, Text, TextInput } from 'react-native'
 
 const labels = {
@@ -12,11 +12,22 @@ const labels = {
 const FloatingLabelComponent = (props) => {
     const [inFocus, setInFocus] = useState(false)
     const [label, setLabel] = useState('')
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [repassword, setRePassword] = useState('')
-    const [lengthObj, setLengthObj] = useState({})
+    const [lengthObj, setLengthObj] = useState({
+        'Name': 0,
+        'Email': 0,
+        'Password': 0,
+        'RePassword': 0,
+    })
+    const [inputState, setInputState] = useState({ ...labels })
+
+    const returnToParent = {
+        'Name': 'passToParentName',
+        'Email': 'passToParentEmail',
+        'Password': 'passToParentPass',
+        'RePassword': 'passToParentRePass',
+    }
+
+    console.log("InputState", inputState)
 
     const textStyle = {
         position: 'absolute',
@@ -27,56 +38,39 @@ const FloatingLabelComponent = (props) => {
         top: (inFocus || lengthObj[label] > 1) ? 0 : 32,
     }
 
-    console.log(lengthObj)
-
     function handleInputText(text, _label) {
-        if(label != _label) {
+        const updateInputState = { ...inputState }
+        updateInputState[_label] = text
+        setInputState(updateInputState)
+
+        if (label != _label) {
             setLabel(_label)
         }
-        if (_label == labels.email && text != email) {
-            props.passToParentEmail(text)
-            setEmail(text)
-        }
-        else if (_label == labels.password && text != password) {
-            props.passToParentPass(text)
-            setPassword(text)
-        }
-        else if (_label == labels.repassword && text != repassword) {
-            props.passToParentRePass(text)
-            setRePassword(text)
-        }
-        else if (_label == labels.name && text != name) {
-            props.passToParentName(text)
-            setName(text)
-        }
+        
+        console.log(props[returnToParent[_label]]())
 
-        if(lengthObj.Name != name.length || lengthObj.Email != email.length || lengthObj.Password != password.length || lengthObj.RePassword != repassword.length) {
-            const obj = {
-                'Name': name.length,
-                'Email': email.length,
-                'Password': password.length,
-                'RePassword': repassword.length,
-            }
-
-            setLengthObj(obj)
+        const obj = { ...lengthObj }
+        if(inputState[_label] != undefined) {
+            obj[_label] = Math.max(inputState[_label].length, 0)
         }
-    }
+        setLengthObj(obj)
+}
 
-    return (
-        <>
-            <Text style={textStyle}>{props.label} </Text>
-            <TextInput style={styles.textInputStyle}
-                onFocus={() => {
-                    setInFocus(true)
-                }}
-                onBlur={() => {
-                    setInFocus(false)
-                }}
-                onChangeText={text => handleInputText(text, props.label)}
-                secureTextEntry={props.pass}
-            />
-        </>
-    )
+return (
+    <>
+        <Text style={textStyle}>{props.label} </Text>
+        <TextInput style={styles.textInputStyle}
+            onFocus={() => {
+                setInFocus(true)
+            }}
+            onBlur={() => {
+                setInFocus(false)
+            }}
+            onChangeText={text => handleInputText(text, props.label)}
+            secureTextEntry={props.pass} value={inputState[label]}
+        />
+    </>
+)
 }
 
 const styles = StyleSheet.create({
