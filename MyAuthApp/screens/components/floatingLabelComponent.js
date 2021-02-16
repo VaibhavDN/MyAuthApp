@@ -51,7 +51,7 @@ const FloatingLabelComponent = (props) => {
 
         const obj = { ...lengthObj }
         if(inputState[_label] != undefined) {
-            obj[_label] = Math.max(inputState[_label].length, 0)
+            obj[_label] = inputState[_label].length
         }
         setLengthObj(obj)
 }
